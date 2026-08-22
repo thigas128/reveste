@@ -1,139 +1,393 @@
-REVESTE
-Início Explorar Avaliações Admin ⚙
-+ Anunciar ☰
-Início Explorar Avaliações Admin ⚙ + Anunciar
-🌿 Moda Circular Brasileira
-Vista
-o Novo
-de Novo.
-Compre, venda e troque roupas com pessoas perto de você. Economia real. Estilo sem culpa.
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reveste — Compre, Venda & Troque Moda</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
 
-🔍
-O que você procura?
-📍
-Cidade ou estado
-Buscar
-Jaquetas Vestidos Tênis Blazers Conjuntos Moletons
-—Anúncios
-—Vendas ativas
-—Trocas abertas
-—Membros
-Em Destaque
-Ver tudo →
-Categorias
-🧥
-Casacos
-👗
-Vestidos
-👟
-Calçados
-🕴
-Blazers
-👖
-Calças
-👕
-Camisetas
-✨
-Conjuntos
-🧣
-Moletons
-Como Funciona
-01
-Fotografe sua peça
-Tire fotos com boa iluminação e crie seu anúncio em 2 minutos, direto do celular.
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav id="navbar">
+  <a class="logo" onclick="go('home')">REVESTE</a>
+  <div class="nav-center">
+    <a onclick="go('home')">Início</a>
+    <a onclick="go('listings')">Explorar</a>
+    <a onclick="go('home'); delay(()=>scrollTo('#reviews'))">Avaliações</a>
+    <a onclick="go('admin')" class="nav-admin">Admin ⚙</a>
+  </div>
+  <button class="nav-cta" onclick="openModal('m-add')">+ Anunciar</button>
+  <button class="nav-burger" onclick="toggleNav()">☰</button>
+</nav>
 
-02
-Busque perto de você
-Filtre por cidade ou estado e encontre quem vende ou quer trocar na sua região.
+<div id="mobile-nav" class="mobile-nav hidden">
+  <a onclick="go('home');toggleNav()">Início</a>
+  <a onclick="go('listings');toggleNav()">Explorar</a>
+  <a onclick="go('home');toggleNav();delay(()=>scrollTo('#reviews'))">Avaliações</a>
+  <a onclick="go('admin');toggleNav()">Admin ⚙</a>
+  <button class="nav-cta full" onclick="openModal('m-add');toggleNav()">+ Anunciar</button>
+</div>
 
-03
-Negocie direto
-Fale com o vendedor, combine a entrega ou retirada e finalize com segurança.
+<!-- ══════════════ PÁGINA HOME ══════════════ -->
+<div id="p-home">
 
-04
-Vista o novo
-Renove o guarda-roupa, economize e faça parte da moda que cuida do planeta.
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">🌿 Moda Circular Brasileira</div>
+      <h1 class="hero-title">Vista<br><em>o Novo</em><br>de Novo.</h1>
+      <p class="hero-desc">Compre, venda e troque roupas com pessoas perto de você. Economia real. Estilo sem culpa.</p>
+      <div class="hero-search">
+        <div class="hs-field"><span>🔍</span><input id="h-search" type="text" placeholder="O que você procura?"></div>
+        <div class="hs-divider"></div>
+        <div class="hs-field"><span>📍</span><input id="h-region" type="text" placeholder="Cidade ou estado"></div>
+        <button onclick="heroSearch()">Buscar</button>
+      </div>
+      <div class="hero-chips">
+        <button onclick="chip('jaqueta')">Jaquetas</button>
+        <button onclick="chip('vestido')">Vestidos</button>
+        <button onclick="chip('tênis')">Tênis</button>
+        <button onclick="chip('blazer')">Blazers</button>
+        <button onclick="chip('conjunto')">Conjuntos</button>
+        <button onclick="chip('moletom')">Moletons</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Collage de fotos -->
+      <div class="collage">
+        <div class="col-card c1" data-id="1"></div>
+        <div class="col-card c2" data-id="3"></div>
+        <div class="col-card c3" data-id="6"></div>
+        <div class="col-card c4" data-id="2"></div>
+      </div>
+    </div>
+  </section>
 
-Vendedores em Destaque
-O que dizem nossos membros
-★★★★★ 4.9 / 5.0
-REVESTE
-Moda circular para todos os estilos e bolsos. Feito no Brasil com 💚
+  <!-- STATS -->
+  <section class="stats-band">
+    <div class="stat"><strong id="s-total">—</strong><span>Anúncios</span></div>
+    <div class="stat-div"></div>
+    <div class="stat"><strong id="s-vendas">—</strong><span>Vendas ativas</span></div>
+    <div class="stat-div"></div>
+    <div class="stat"><strong id="s-trocas">—</strong><span>Trocas abertas</span></div>
+    <div class="stat-div"></div>
+    <div class="stat"><strong id="s-membros">—</strong><span>Membros</span></div>
+  </section>
 
-Plataforma
-Anunciar grátis Como funciona Segurança
-Suporte
-Ajuda Termos de uso Privacidade
-© 2025 Reveste · Moda que transforma
-Filtros
-Limpar
-Buscar 
-Palavra-chave...
- Região 
-Cidade ou estado...
- Tipo
-Todos Venda Troca
-Gênero
-Todos Fem. Masc. Unissex
-Categoria 
-Todas
- Tamanho
-Todos PP P M G GG 38 39 40 41 42
-Ordenar por 
-Mais recentes
-Carregando...
-⊞ ☰
-Painel Admin
-Gerencie anúncios, avaliações e conteúdo da plataforma
+  <!-- DESTAQUES -->
+  <section class="section">
+    <div class="sec-head">
+      <h2>Em Destaque</h2>
+      <a class="sec-link" onclick="go('listings')">Ver tudo →</a>
+    </div>
+    <div class="grid" id="home-grid"></div>
+  </section>
 
-← Voltar ao site
-Anúncios Avaliações
-Buscar anúncio...
- + Novo Anúncio
-Foto	Título	Tipo	Preço	Vendedor	Local	Visitas	Ações
-+ Nova Avaliação
-✕
-✕
-Novo Anúncio
-Título *
-Ex: Jaqueta Jeans Vintage
-Tipo 
-Venda
-Preço (R$)
-0,00
-Tamanho 
-M
-Gênero 
-Feminino
-Categoria 
-Casacos
-Cidade
-São Paulo
-Estado (UF)
-SP
-Nome do Vendedor
-Seu nome
-Nota do Vendedor
-5,0
-Foto da Roupa (nome do arquivo em imgs/)
-imgs/minha-roupa.jpg
-Foto do Vendedor (nome do arquivo em imgs/)
-imgs/meu-perfil.jpg
-Descrição *
-Descreva a peça: estado, material, condições...
-Destaque? 
-Não
-Cancelar Salvar
-✕
-Nova Avaliação
-Nome *
-Seu nome
-Cidade
-Sua cidade
-Nota (1-5)
-5
-Foto (nome do arquivo em imgs/)
-imgs/foto.jpg
-Avaliação *
-Conte sua experiência...
-Cancelar Publicar
+  <!-- CATEGORIAS -->
+  <section class="section cats-section">
+    <h2>Categorias</h2>
+    <div class="cats-grid">
+      <div class="cat" onclick="filterCat('casacos')"><div class="cat-icon">🧥</div><span>Casacos</span></div>
+      <div class="cat" onclick="filterCat('vestidos')"><div class="cat-icon">👗</div><span>Vestidos</span></div>
+      <div class="cat" onclick="filterCat('calcados')"><div class="cat-icon">👟</div><span>Calçados</span></div>
+      <div class="cat" onclick="filterCat('blazers')"><div class="cat-icon">🕴</div><span>Blazers</span></div>
+      <div class="cat" onclick="filterCat('calcas')"><div class="cat-icon">👖</div><span>Calças</span></div>
+      <div class="cat" onclick="filterCat('camisetas')"><div class="cat-icon">👕</div><span>Camisetas</span></div>
+      <div class="cat" onclick="filterCat('conjuntos')"><div class="cat-icon">✨</div><span>Conjuntos</span></div>
+      <div class="cat" onclick="filterCat('moletons')"><div class="cat-icon">🧣</div><span>Moletons</span></div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section how-section">
+    <h2>Como Funciona</h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <h3>Fotografe sua peça</h3>
+        <p>Tire fotos com boa iluminação e crie seu anúncio em 2 minutos, direto do celular.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <h3>Busque perto de você</h3>
+        <p>Filtre por cidade ou estado e encontre quem vende ou quer trocar na sua região.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <h3>Negocie direto</h3>
+        <p>Fale com o vendedor, combine a entrega ou retirada e finalize com segurança.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <h3>Vista o novo</h3>
+        <p>Renove o guarda-roupa, economize e faça parte da moda que cuida do planeta.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENDEDORES EM DESTAQUE -->
+  <section class="section sellers-section">
+    <h2>Vendedores em Destaque</h2>
+    <div class="sellers-grid" id="sellers-grid"></div>
+  </section>
+
+  <!-- AVALIAÇÕES -->
+  <section class="section" id="reviews">
+    <div class="sec-head">
+      <h2>O que dizem nossos membros</h2>
+      <div class="avg-rating">
+        <span class="stars">★★★★★</span>
+        <strong>4.9</strong> / 5.0
+      </div>
+    </div>
+    <div class="reviews-grid" id="reviews-grid"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">REVESTE</div>
+        <p>Moda circular para todos os estilos e bolsos. Feito no Brasil com 💚</p>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <a href="#">Anunciar grátis</a>
+        <a href="#">Como funciona</a>
+        <a href="#">Segurança</a>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <a href="#">Ajuda</a>
+        <a href="#">Termos de uso</a>
+        <a href="#">Privacidade</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 Reveste · Moda que transforma</div>
+  </footer>
+
+</div><!-- /p-home -->
+
+<!-- ══════════════ PÁGINA EXPLORAR ══════════════ -->
+<div id="p-listings" class="hidden">
+  <div class="explore-layout">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <h3>Filtros</h3>
+        <button class="btn-clear-filters" onclick="clearFilters()">Limpar</button>
+      </div>
+
+      <label class="filter-label">Buscar</label>
+      <input class="filter-input" id="f-q" type="text" placeholder="Palavra-chave..." oninput="applyFilters()">
+
+      <label class="filter-label">Região</label>
+      <input class="filter-input" id="f-r" type="text" placeholder="Cidade ou estado..." oninput="applyFilters()">
+
+      <label class="filter-label">Tipo</label>
+      <div class="pill-group" id="fg-type">
+        <button class="pill active" data-val="todos" onclick="setPill(this,'fg-type')">Todos</button>
+        <button class="pill" data-val="venda" onclick="setPill(this,'fg-type')">Venda</button>
+        <button class="pill" data-val="troca" onclick="setPill(this,'fg-type')">Troca</button>
+      </div>
+
+      <label class="filter-label">Gênero</label>
+      <div class="pill-group" id="fg-gender">
+        <button class="pill active" data-val="todos" onclick="setPill(this,'fg-gender')">Todos</button>
+        <button class="pill" data-val="feminino" onclick="setPill(this,'fg-gender')">Fem.</button>
+        <button class="pill" data-val="masculino" onclick="setPill(this,'fg-gender')">Masc.</button>
+        <button class="pill" data-val="unissex" onclick="setPill(this,'fg-gender')">Unissex</button>
+      </div>
+
+      <label class="filter-label">Categoria</label>
+      <select class="filter-select" id="f-cat" onchange="applyFilters()">
+        <option value="todos">Todas</option>
+        <option value="casacos">Casacos</option>
+        <option value="vestidos">Vestidos</option>
+        <option value="calcados">Calçados</option>
+        <option value="blazers">Blazers</option>
+        <option value="calcas">Calças</option>
+        <option value="camisetas">Camisetas</option>
+        <option value="conjuntos">Conjuntos</option>
+        <option value="moletons">Moletons</option>
+      </select>
+
+      <label class="filter-label">Tamanho</label>
+      <div class="pill-group wrap" id="fg-size">
+        <button class="pill active" data-val="todos" onclick="setPill(this,'fg-size')">Todos</button>
+        <button class="pill" data-val="PP" onclick="setPill(this,'fg-size')">PP</button>
+        <button class="pill" data-val="P" onclick="setPill(this,'fg-size')">P</button>
+        <button class="pill" data-val="M" onclick="setPill(this,'fg-size')">M</button>
+        <button class="pill" data-val="G" onclick="setPill(this,'fg-size')">G</button>
+        <button class="pill" data-val="GG" onclick="setPill(this,'fg-size')">GG</button>
+        <button class="pill" data-val="38" onclick="setPill(this,'fg-size')">38</button>
+        <button class="pill" data-val="39" onclick="setPill(this,'fg-size')">39</button>
+        <button class="pill" data-val="40" onclick="setPill(this,'fg-size')">40</button>
+        <button class="pill" data-val="41" onclick="setPill(this,'fg-size')">41</button>
+        <button class="pill" data-val="42" onclick="setPill(this,'fg-size')">42</button>
+      </div>
+
+      <label class="filter-label">Ordenar por</label>
+      <select class="filter-select" id="f-sort" onchange="applyFilters()">
+        <option value="newest">Mais recentes</option>
+        <option value="views">Mais vistos</option>
+        <option value="price_asc">Menor preço</option>
+        <option value="price_desc">Maior preço</option>
+      </select>
+    </aside>
+
+    <main class="explore-main">
+      <div class="explore-bar">
+        <h2 id="explore-count">Carregando...</h2>
+        <div class="view-btns">
+          <button id="vb-grid" class="vb active" onclick="setView('grid')">⊞</button>
+          <button id="vb-list" class="vb" onclick="setView('list')">☰</button>
+        </div>
+      </div>
+      <div class="grid" id="explore-grid"></div>
+    </main>
+
+  </div>
+</div>
+
+<!-- ══════════════ PÁGINA ADMIN ══════════════ -->
+<div id="p-admin" class="hidden">
+  <div class="admin-wrap">
+    <div class="admin-top">
+      <div>
+        <h1>Painel Admin</h1>
+        <p>Gerencie anúncios, avaliações e conteúdo da plataforma</p>
+      </div>
+      <button class="nav-cta" onclick="go('home')">← Voltar ao site</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="atab active" onclick="aTab('anuncios',this)">Anúncios</button>
+      <button class="atab" onclick="aTab('avaliacoes',this)">Avaliações</button>
+    </div>
+
+    <!-- Aba anúncios -->
+    <div id="a-anuncios">
+      <div class="admin-bar">
+        <input class="filter-input" id="admin-q" type="text" placeholder="Buscar anúncio..." oninput="loadAdminListings()">
+        <button class="nav-cta" onclick="openModal('m-add')">+ Novo Anúncio</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr>
+            <th>Foto</th><th>Título</th><th>Tipo</th><th>Preço</th>
+            <th>Vendedor</th><th>Local</th><th>Visitas</th><th>Ações</th>
+          </tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Aba avaliações -->
+    <div id="a-avaliacoes" class="hidden">
+      <div class="admin-bar">
+        <button class="nav-cta" onclick="openModal('m-review')">+ Nova Avaliação</button>
+      </div>
+      <div class="reviews-admin-grid" id="reviews-admin"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: DETALHE ══════════════ -->
+<div id="m-detail" class="overlay hidden" onclick="bgClose(event,'m-detail')">
+  <div class="modal modal-detail">
+    <button class="modal-x" onclick="closeModal('m-detail')">✕</button>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: ANÚNCIO ══════════════ -->
+<div id="m-add" class="overlay hidden" onclick="bgClose(event,'m-add')">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('m-add')">✕</button>
+    <h2 id="m-add-title">Novo Anúncio</h2>
+    <input type="hidden" id="e-id">
+    <div class="fg">
+      <div class="fi s2"><label>Título *</label><input id="e-title" type="text" placeholder="Ex: Jaqueta Jeans Vintage"></div>
+      <div class="fi"><label>Tipo</label>
+        <select id="e-type">
+          <option value="venda">Venda</option>
+          <option value="troca">Troca</option>
+        </select>
+      </div>
+      <div class="fi"><label>Preço (R$)</label><input id="e-price" type="number" step="0.01" min="0" placeholder="0,00"></div>
+      <div class="fi"><label>Tamanho</label>
+        <select id="e-size">
+          <option>PP</option><option>P</option><option selected>M</option>
+          <option>G</option><option>GG</option>
+          <option>36</option><option>37</option><option>38</option>
+          <option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option>
+        </select>
+      </div>
+      <div class="fi"><label>Gênero</label>
+        <select id="e-gender">
+          <option value="feminino">Feminino</option>
+          <option value="masculino">Masculino</option>
+          <option value="unissex">Unissex</option>
+        </select>
+      </div>
+      <div class="fi"><label>Categoria</label>
+        <select id="e-cat">
+          <option value="casacos">Casacos</option>
+          <option value="vestidos">Vestidos</option>
+          <option value="calcados">Calçados</option>
+          <option value="blazers">Blazers</option>
+          <option value="calcas">Calças</option>
+          <option value="camisetas">Camisetas</option>
+          <option value="conjuntos">Conjuntos</option>
+          <option value="moletons">Moletons</option>
+        </select>
+      </div>
+      <div class="fi"><label>Cidade</label><input id="e-city" type="text" placeholder="São Paulo"></div>
+      <div class="fi"><label>Estado (UF)</label><input id="e-state" type="text" maxlength="2" placeholder="SP"></div>
+      <div class="fi"><label>Nome do Vendedor</label><input id="e-seller" type="text" placeholder="Seu nome"></div>
+      <div class="fi"><label>Nota do Vendedor</label><input id="e-rating" type="number" min="1" max="5" step="0.1" value="5.0"></div>
+      <div class="fi s2"><label>Foto da Roupa (nome do arquivo em imgs/)</label><input id="e-image" type="text" placeholder="imgs/minha-roupa.jpg"></div>
+      <div class="fi s2"><label>Foto do Vendedor (nome do arquivo em imgs/)</label><input id="e-avatar" type="text" placeholder="imgs/meu-perfil.jpg"></div>
+      <div class="fi s2"><label>Descrição *</label><textarea id="e-desc" rows="4" placeholder="Descreva a peça: estado, material, condições..."></textarea></div>
+      <div class="fi"><label>Destaque?</label>
+        <select id="e-featured">
+          <option value="false">Não</option>
+          <option value="true">Sim</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('m-add')">Cancelar</button>
+      <button class="nav-cta" onclick="saveListing()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: AVALIAÇÃO ══════════════ -->
+<div id="m-review" class="overlay hidden" onclick="bgClose(event,'m-review')">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('m-review')">✕</button>
+    <h2>Nova Avaliação</h2>
+    <div class="fg">
+      <div class="fi"><label>Nome *</label><input id="r-name" type="text" placeholder="Seu nome"></div>
+      <div class="fi"><label>Cidade</label><input id="r-city" type="text" placeholder="Sua cidade"></div>
+      <div class="fi"><label>Nota (1-5)</label><input id="r-rating" type="number" min="1" max="5" value="5"></div>
+      <div class="fi"><label>Foto (nome do arquivo em imgs/)</label><input id="r-avatar" type="text" placeholder="imgs/foto.jpg"></div>
+      <div class="fi s2"><label>Avaliação *</label><textarea id="r-text" rows="3" placeholder="Conte sua experiência..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('m-review')">Cancelar</button>
+      <button class="nav-cta" onclick="saveReview()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
