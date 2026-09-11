@@ -1,4 +1,128 @@
-    title: 'Moletom Básico Preto',
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+
+// ─────────────────────────────────────────────
+// BANCO DE DADOS EM MEMÓRIA
+// Substitua os campos "image" pelas fotos reais
+// quando você enviá-las
+// ─────────────────────────────────────────────
+let db = {
+  listings: [
+    {
+      id: 1,
+      type: 'venda',
+      title: 'Jaqueta Jeans Oversized',
+      price: 95.00,
+      size: 'M',
+      gender: 'feminino',
+      category: 'casacos',
+      city: 'São Paulo', state: 'SP',
+      description: 'Jaqueta jeans oversized em ótimo estado. Estilo vintage, combina com tudo. Comprada em brechó europeu.',
+      seller: 'Camila Reis',
+      sellerRole: 'Vendedora verificada',
+      sellerRating: 4.9,
+      sellerSales: 42,
+      // ⬇ Troque pela foto real quando enviar
+      image: 'imgs/roupa-placeholder-1.jpg',
+      sellerAvatar: 'imgs/user-placeholder-1.jpg',
+      date: '2025-04-10', views: 218, featured: true
+    },
+    {
+      id: 2,
+      type: 'troca',
+      title: 'Vestido Midi Floral',
+      price: 0,
+      size: 'P',
+      gender: 'feminino',
+      category: 'vestidos',
+      city: 'Campinas', state: 'SP',
+      description: 'Vestido floral midi levíssimo, perfeito para o calor. Aceito troca por blusas ou calças tam. P.',
+      seller: 'Letícia Mano',
+      sellerRole: 'Negociante',
+      sellerRating: 5.0,
+      sellerSales: 17,
+      image: 'imgs/roupa-placeholder-2.jpg',
+      sellerAvatar: 'imgs/user-placeholder-2.jpg',
+      date: '2025-04-09', views: 134, featured: true
+    },
+    {
+      id: 3,
+      type: 'venda',
+      title: 'Tênis Chunky Branco',
+      price: 189.00,
+      size: '38',
+      gender: 'feminino',
+      category: 'calcados',
+      city: 'Rio de Janeiro', state: 'RJ',
+      description: 'Tênis chunky branco estilo dad shoe. Usado 3x. Acompanha caixa original e nota fiscal.',
+      seller: 'Fernanda Cruz',
+      sellerRole: 'Vendedora verificada',
+      sellerRating: 4.8,
+      sellerSales: 29,
+      image: 'imgs/roupa-placeholder-3.jpg',
+      sellerAvatar: 'imgs/user-placeholder-3.jpg',
+      date: '2025-04-08', views: 301, featured: true
+    },
+    {
+      id: 4,
+      type: 'venda',
+      title: 'Blazer Alfaiataria Caramelo',
+      price: 175.00,
+      size: 'G',
+      gender: 'unissex',
+      category: 'blazers',
+      city: 'Belo Horizonte', state: 'MG',
+      description: 'Blazer de alfaiataria tom caramelo. Fechamento com botões dourados. Elegante e versátil.',
+      seller: 'Rafael Torres',
+      sellerRole: 'Negociante',
+      sellerRating: 4.7,
+      sellerSales: 11,
+      image: 'imgs/roupa-placeholder-4.jpg',
+      sellerAvatar: 'imgs/user-placeholder-4.jpg',
+      date: '2025-04-07', views: 189, featured: false
+    },
+    {
+      id: 5,
+      type: 'troca',
+      title: 'Calça Cargo Verde Oliva',
+      price: 0,
+      size: 'M',
+      gender: 'masculino',
+      category: 'calcas',
+      city: 'Curitiba', state: 'PR',
+      description: 'Calça cargo verde oliva streetwear. Troco por camisas ou moletons tam M.',
+      seller: 'Bruno Salave',
+      sellerRole: 'Membro',
+      sellerRating: 4.5,
+      sellerSales: 6,
+      image: 'imgs/roupa-placeholder-5.jpg',
+      sellerAvatar: 'imgs/user-placeholder-5.jpg',
+      date: '2025-04-06', views: 77, featured: false
+    },
+    {
+      id: 6,
+      type: 'venda',
+      title: 'Conjunto Cropped + Saia',
+      price: 120.00,
+      size: 'PP',
+      gender: 'feminino',
+      category: 'conjuntos',
+      city: 'Fortaleza', state: 'CE',
+      description: 'Conjunto cropped + saia midi em tecido canelado rosé. Nunca usado, tag original.',
+      seller: 'Yasmin Alves',
+      sellerRole: 'Vendedora verificada',
+      sellerRating: 5.0,
+      sellerSales: 23,
+      image: 'imgs/roupa-placeholder-6.jpg',
+      sellerAvatar: 'imgs/user-placeholder-6.jpg',
+      date: '2025-04-05', views: 260, featured: true
+    },
+    {
+      id: 7,
+      type: 'venda',
+      title: 'Moletom Básico Preto',
       price: 89.00,
       size: 'GG',
       gender: 'unissex',
@@ -30,6 +154,226 @@
       image: 'imgs/roupa-placeholder-8.jpg',
       sellerAvatar: 'imgs/user-placeholder-8.jpg',
       date: '2025-04-03', views: 61, featured: false
+    },
+
+    // ── SOCIAL ──────────────────────────────────
+    {
+      id: 9,
+      type: 'venda',
+      title: 'Camisa Social Oxford Branca',
+      price: 79.00,
+      size: 'M',
+      gender: 'masculino',
+      category: 'social',
+      city: 'São Paulo', state: 'SP',
+      description: 'Camisa social Oxford 100% algodão, cor branca. Perfeita para reuniões, entrevistas e eventos. Usada 2x, impecável.',
+      seller: 'André Moreira',
+      sellerRole: 'Vendedor verificado',
+      sellerRating: 4.8,
+      sellerSales: 19,
+      image: 'https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-11', views: 144, featured: true
+    },
+    {
+      id: 10,
+      type: 'venda',
+      title: 'Terno Slim Fit Cinza Chumbo',
+      price: 320.00,
+      size: 'G',
+      gender: 'masculino',
+      category: 'social',
+      city: 'Brasília', state: 'DF',
+      description: 'Terno slim fit cinza chumbo, duas peças (paletó + calça). Tecido de alta qualidade, forro completo. Usado em apenas um evento.',
+      seller: 'Marcelo Ávila',
+      sellerRole: 'Negociante',
+      sellerRating: 4.9,
+      sellerSales: 7,
+      image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-10', views: 203, featured: true
+    },
+    {
+      id: 11,
+      type: 'troca',
+      title: 'Vestido Social Midi Preto',
+      price: 0,
+      size: 'M',
+      gender: 'feminino',
+      category: 'social',
+      city: 'Rio de Janeiro', state: 'RJ',
+      description: 'Vestido midi preto social, decote V com detalhe de botões. Ideal para trabalho ou eventos formais. Troco por vestidos ou blusas sociais tam. M.',
+      seller: 'Bianca Torres',
+      sellerRole: 'Membro',
+      sellerRating: 4.7,
+      sellerSales: 11,
+      image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-09', views: 178, featured: false
+    },
+    {
+      id: 12,
+      type: 'venda',
+      title: 'Calça Social Reta Preta',
+      price: 110.00,
+      size: 'G',
+      gender: 'unissex',
+      category: 'social',
+      city: 'Curitiba', state: 'PR',
+      description: 'Calça social reta preta, tecido de alfaiataria com caimento perfeito. Combina com blazer, camisa ou blusa. Zero uso.',
+      seller: 'Tatiane Melo',
+      sellerRole: 'Vendedora verificada',
+      sellerRating: 5.0,
+      sellerSales: 34,
+      image: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-08', views: 132, featured: false
+    },
+    {
+      id: 13,
+      type: 'venda',
+      title: 'Blazer Social Azul Marinho',
+      price: 195.00,
+      size: 'M',
+      gender: 'masculino',
+      category: 'social',
+      city: 'Porto Alegre', state: 'RS',
+      description: 'Blazer social azul marinho slim, botões dourados. Perfeito para o dia a dia no trabalho ou jantares. Excelente estado.',
+      seller: 'Felipe Nunes',
+      sellerRole: 'Negociante',
+      sellerRating: 4.6,
+      sellerSales: 15,
+      image: 'https://images.unsplash.com/photo-1555069519-127aadecd574?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-07', views: 167, featured: true
+    },
+
+    // ── STREETWEAR ───────────────────────────────
+    {
+      id: 14,
+      type: 'venda',
+      title: 'Moletom Canguru Off-White',
+      price: 149.00,
+      size: 'G',
+      gender: 'unissex',
+      category: 'moletons',
+      city: 'São Paulo', state: 'SP',
+      description: 'Moletom canguru estilo off-white, logo bordado no peito. Tecido pesado e quentinho. Streetwear autêntico, pouquíssimo uso.',
+      seller: 'Kaio Ramos',
+      sellerRole: 'Negociante',
+      sellerRating: 4.8,
+      sellerSales: 22,
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-11', views: 289, featured: true
+    },
+    {
+      id: 15,
+      type: 'troca',
+      title: 'Calça Baggy Wide Leg Preta',
+      price: 0,
+      size: 'M',
+      gender: 'unissex',
+      category: 'calcas',
+      city: 'Belo Horizonte', state: 'MG',
+      description: 'Calça baggy wide leg preta, estilo japonês streetwear. Cintura alta, corte amplo. Troco por tênis ou camisetas oversize tam. M.',
+      seller: 'Nathalia Gomes',
+      sellerRole: 'Membro',
+      sellerRating: 4.5,
+      sellerSales: 9,
+      image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-10', views: 198, featured: false
+    },
+    {
+      id: 16,
+      type: 'venda',
+      title: 'Jaqueta Corta-Vento Refletiva',
+      price: 210.00,
+      size: 'M',
+      gender: 'unissex',
+      category: 'casacos',
+      city: 'Recife', state: 'PE',
+      description: 'Jaqueta corta-vento com detalhes refletivos, estilo streetwear técnico. Impermeável, leve. Perfeita para o visual urbano.',
+      seller: 'Érick Barbosa',
+      sellerRole: 'Vendedor verificado',
+      sellerRating: 4.9,
+      sellerSales: 31,
+      image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-09', views: 241, featured: true
+    },
+    {
+      id: 17,
+      type: 'venda',
+      title: 'Camiseta Oversized Grafite NYC',
+      price: 65.00,
+      size: 'GG',
+      gender: 'unissex',
+      category: 'camisetas',
+      city: 'Manaus', state: 'AM',
+      description: 'Camiseta oversized com estampa NYC grafite em silk. Tecido pesado drop shoulder. Estética hip-hop/streetwear clássica.',
+      seller: 'Wesley Dias',
+      sellerRole: 'Membro',
+      sellerRating: 4.4,
+      sellerSales: 6,
+      image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-08', views: 115, featured: false
+    },
+    {
+      id: 18,
+      type: 'troca',
+      title: 'Tênis Plataforma Chunky Preto',
+      price: 0,
+      size: '40',
+      gender: 'unissex',
+      category: 'calcados',
+      city: 'Florianópolis', state: 'SC',
+      description: 'Tênis chunky plataforma preto, solado grosso estilo Y2K streetwear. Usado 4x. Troco por tênis colorido ou roupas oversize.',
+      seller: 'Jéssica Leal',
+      sellerRole: 'Negociante',
+      sellerRating: 4.7,
+      sellerSales: 14,
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-07', views: 176, featured: false
+    },
+    {
+      id: 19,
+      type: 'venda',
+      title: 'Boné Snapback Preto Aba Reta',
+      price: 45.00,
+      size: 'único',
+      gender: 'unissex',
+      category: 'acessorios',
+      city: 'Goiânia', state: 'GO',
+      description: 'Boné snapback aba reta preto com bordado lateral. Estilo hip-hop clássico. Regulagem traseira, serve em todos. Perfeito estado.',
+      seller: 'Samuel Freitas',
+      sellerRole: 'Membro',
+      sellerRating: 4.3,
+      sellerSales: 3,
+      image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-06', views: 88, featured: false
+    },
+    {
+      id: 20,
+      type: 'venda',
+      title: 'Conjunto Streetwear Agasalho',
+      price: 185.00,
+      size: 'M',
+      gender: 'masculino',
+      category: 'conjuntos',
+      city: 'Salvador', state: 'BA',
+      description: 'Conjunto agasalho streetwear: blusa de moletom + calça jogger combinando. Tecido plush grosso. Visual completo para o inverno urbano.',
+      seller: 'Igor Santana',
+      sellerRole: 'Vendedor verificado',
+      sellerRating: 4.8,
+      sellerSales: 27,
+      image: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=600&q=80',
+      sellerAvatar: '',
+      date: '2025-04-05', views: 223, featured: true
     }
   ],
 
@@ -42,7 +386,7 @@
     { id: 6, author: 'Henrique Souza', city: 'Porto Alegre', rating: 5, avatar: 'imgs/user-placeholder-6.jpg', text: 'Interface linda, super fácil de usar no celular. Encontrei um blazer incrível a 3 bairros de distância.', date: '2025-03-05' }
   ],
 
-  nextId: 9
+  nextId: 21
 };
 
 // ─────────────────────────────────────────────
@@ -74,11 +418,19 @@ function json(res, data, status = 200) {
 
 function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let raw = '';
-    req.on('data', c => raw += c);
+    const chunks = [];
+    let size = 0;
+    const MAX = 40 * 1024 * 1024; // 40MB (base64 e ~33% maior)
+    req.on('data', c => {
+      size += c.length;
+      if (size > MAX) { reject(new Error('Payload too large')); return; }
+      chunks.push(typeof c === 'string' ? Buffer.from(c) : c);
+    });
     req.on('end', () => {
-      try { resolve(raw ? JSON.parse(raw) : {}); }
-      catch (e) { reject(e); }
+      try {
+        const raw = Buffer.concat(chunks).toString('utf8');
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch (e) { reject(e); }
     });
   });
 }
@@ -193,12 +545,25 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── Arquivos estáticos ─────────────────────
-  let filePath = path.join(__dirname, 'public', pathname === '/' ? '/index.html' : pathname);
-  fs.readFile(filePath, (err, data) => {
-    if (err) { res.writeHead(404); return res.end('Not found'); }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath)] || 'application/octet-stream' });
-    res.end(data);
-  });
+  // Tenta primeiro na pasta public/, depois na raiz
+  let reqPath = pathname === '/' ? '/index.html' : pathname;
+  // Remove /public/ do início se vier assim
+  if (reqPath.startsWith('/public/')) reqPath = reqPath.replace('/public/', '/');
+
+  const tryPaths = [
+    path.join(__dirname, 'public', reqPath),
+    path.join(__dirname, reqPath)
+  ];
+
+  function tryNext(paths) {
+    if (!paths.length) { res.writeHead(404); return res.end('Not found'); }
+    fs.readFile(paths[0], (err, data) => {
+      if (err) return tryNext(paths.slice(1));
+      res.writeHead(200, { 'Content-Type': MIME[path.extname(paths[0])] || 'application/octet-stream' });
+      res.end(data);
+    });
+  }
+  tryNext(tryPaths);
 });
 
 const PORT = process.env.PORT || 3000;
