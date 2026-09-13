@@ -6,6 +6,54 @@ const API = window.location.origin;
 
 // ─── Utilitários ───────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
+
+// Upload de foto → base64 comprimido via canvas
+const MAX_FILE_MB = 20;
+const MAX_PX = 1200; // largura/altura máxima após redimensionar
+
+function previewImg(input, previewId, hiddenId) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > MAX_FILE_MB * 1024 * 1024) {
+    alert(`A foto deve ter no máximo ${MAX_FILE_MB}MB. Esta tem ${(file.size/1024/1024).toFixed(1)}MB.`);
+    input.value = '';
+    return;
+  }
+
+  const preview = $(previewId);
+  preview.innerHTML = '<span>⏳ Processando...</span>';
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // Redimensiona via canvas para no máx 1200px (comprime muito)
+      let w = img.width, h = img.height;
+      if (w > MAX_PX || h > MAX_PX) {
+        if (w > h) { h = Math.round(h * MAX_PX / w); w = MAX_PX; }
+        else       { w = Math.round(w * MAX_PX / h); h = MAX_PX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // Qualidade 0.82 → boa imagem, tamanho razoável
+      const base64 = canvas.toDataURL('image/jpeg', 0.82);
+
+      // Preview
+      preview.innerHTML = `<img src="${base64}" alt="preview">`;
+      // Salva no campo hidden
+      $(hiddenId).value = base64;
+
+      const kb = Math.round(base64.length * 0.75 / 1024);
+      const info = document.createElement('span');
+      info.className = 'upload-size';
+      info.textContent = `✓ ${w}×${h}px · ${kb < 1024 ? kb+'KB' : (kb/1024).toFixed(1)+'MB'}`;
+      preview.appendChild(info);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 const delay = fn => setTimeout(fn, 100);
 
 function scrollTo(sel) {
@@ -47,8 +95,18 @@ function countUp(el, target) {
 async function apiFetch(path, method = 'GET', body = null) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API + path, opts);
-  return res.json();
+  try {
+    const res = await fetch(API + path, opts);
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`HTTP ${res.status}: ${txt}`);
+    }
+    return res.json();
+  } catch(e) {
+    console.error('apiFetch error:', e);
+    toast('Erro de conexão. Tente novamente.');
+    throw e;
+  }
 }
 
 // ─── Roteamento ────────────────────────────────────────────────────────────
@@ -327,8 +385,11 @@ async function editListing(id) {
   $('e-state').value = l.state || '';
   $('e-seller').value  = l.seller;
   $('e-rating').value  = l.sellerRating;
-  $('e-image').value   = l.image || '';
-  $('e-avatar').value  = l.sellerAvatar || '';
+  $('e-image').value  = l.image || '';
+  $('e-avatar').value = l.sellerAvatar || '';
+  // Mostra imagem atual no preview se existir
+  if (l.image) $('e-image-preview').innerHTML = `<img src="${l.image}" alt="foto roupa">`;
+  if (l.sellerAvatar) $('e-avatar-preview').innerHTML = `<img src="${l.sellerAvatar}" alt="foto vendedor">`;
   $('e-desc').value    = l.description;
   $('e-featured').value = l.featured ? 'true' : 'false';
   openModal('m-add');
@@ -390,6 +451,13 @@ function resetAddForm() {
   });
   $('e-rating').value = 5;
   $('e-featured').value = 'false';
+  // Limpa previews de upload
+  const ip = $('e-image-preview');
+  if (ip) ip.innerHTML = '<span>📷 Clique para selecionar a foto da roupa</span>';
+  const ap = $('e-avatar-preview');
+  if (ap) ap.innerHTML = '<span>👤 Clique para selecionar sua foto</span>';
+  const ef = $('e-image-file'); if (ef) ef.value = '';
+  const af = $('e-avatar-file'); if (af) af.value = '';
 }
 
 // ─── SALVAR AVALIAÇÃO ──────────────────────────────────────────────────────
