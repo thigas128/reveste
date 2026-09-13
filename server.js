@@ -420,18 +420,25 @@ function parseBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
-    const MAX = 40 * 1024 * 1024; // 40MB (base64 e ~33% maior)
-    req.on('data', c => {
-      size += c.length;
-      if (size > MAX) { reject(new Error('Payload too large')); return; }
-      chunks.push(typeof c === 'string' ? Buffer.from(c) : c);
+    const MAX = 60 * 1024 * 1024; // 60MB buffer
+    req.on('data', chunk => {
+      size += chunk.length;
+      if (size > MAX) {
+        reject(new Error('Payload too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
     });
     req.on('end', () => {
       try {
         const raw = Buffer.concat(chunks).toString('utf8');
         resolve(raw ? JSON.parse(raw) : {});
-      } catch (e) { reject(e); }
+      } catch (e) {
+        reject(e);
+      }
     });
+    req.on('error', reject);
   });
 }
 
@@ -488,19 +495,27 @@ const server = http.createServer(async (req, res) => {
 
   // ── POST /api/listings ─────────────────────
   if (pathname === '/api/listings' && method === 'POST') {
-    const data = await parseBody(req);
-    const listing = { ...data, id: db.nextId++, date: new Date().toISOString().split('T')[0], views: 0 };
-    db.listings.push(listing);
-    return json(res, listing, 201);
+    try {
+      const data = await parseBody(req);
+      const listing = { ...data, id: db.nextId++, date: new Date().toISOString().split('T')[0], views: 0 };
+      db.listings.push(listing);
+      return json(res, listing, 201);
+    } catch(e) {
+      return json(res, { error: e.message }, 400);
+    }
   }
 
   // ── PUT /api/listings/:id ──────────────────
   if (lMatch && method === 'PUT') {
-    const idx = db.listings.findIndex(l => l.id === +lMatch[1]);
-    if (idx === -1) return json(res, { error: 'Not found' }, 404);
-    const data = await parseBody(req);
-    db.listings[idx] = { ...db.listings[idx], ...data, id: +lMatch[1] };
-    return json(res, db.listings[idx]);
+    try {
+      const idx = db.listings.findIndex(l => l.id === +lMatch[1]);
+      if (idx === -1) return json(res, { error: 'Not found' }, 404);
+      const data = await parseBody(req);
+      db.listings[idx] = { ...db.listings[idx], ...data, id: +lMatch[1] };
+      return json(res, db.listings[idx]);
+    } catch(e) {
+      return json(res, { error: e.message }, 400);
+    }
   }
 
   // ── DELETE /api/listings/:id ───────────────
